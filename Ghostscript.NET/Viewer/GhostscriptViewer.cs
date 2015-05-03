@@ -612,24 +612,30 @@ namespace Ghostscript.NET.Viewer
 
         #region Zoom
 
-        public bool Zoom(float scale, bool test = false)
+        public float Zoom(float scale)
         {
+            float realScale;
             int tmpZoopX = (int)(_zoom_xDpi * scale + 0.5);
             int tmpZoomY = (int)(_zoom_yDpi * scale + 0.5);
 
-            if (tmpZoopX < 39)
-                return false;
-
-            if (tmpZoopX > 496)
-                return false;
-
-            if (!test)
+            if (tmpZoopX < 32)
             {
-                _zoom_xDpi = tmpZoopX;
-                _zoom_yDpi = tmpZoomY;
+                tmpZoopX = 32;
+                tmpZoomY = 32;
             }
 
-            return true;
+            if (tmpZoopX > 496)
+            {
+                tmpZoopX = 496;
+                tmpZoomY = 496;
+            }
+
+            realScale = tmpZoopX / (float)_zoom_xDpi;
+
+            _zoom_xDpi = tmpZoopX;
+            _zoom_yDpi = tmpZoomY;
+
+            return realScale;
         }
 
         #endregion
@@ -640,7 +646,7 @@ namespace Ghostscript.NET.Viewer
         {
             if (this.IsEverythingInitialized)
             {
-                this.Zoom(1.2f, false);
+                this.Zoom(1.2f);
                 this.RefreshPage();
             }
         }
@@ -653,7 +659,7 @@ namespace Ghostscript.NET.Viewer
         {
             if (this.IsEverythingInitialized)
             {
-                this.Zoom(0.8333333f, false);
+                this.Zoom(0.8333333f);
                 this.RefreshPage();
             }
         }
@@ -940,30 +946,6 @@ namespace Ghostscript.NET.Viewer
             get
             {
                 return this.CurrentPageNumber != this.LastPageNumber;
-            }
-        }
-
-        #endregion
-
-        #region CanZoomIn
-
-        public bool CanZoomIn
-        {
-            get
-            {
-                return this.Zoom(1.2f, true);
-            }
-        }
-
-        #endregion
-
-        #region CanZoomOut
-
-        public bool CanZoomOut
-        {
-            get
-            {
-                return this.Zoom(0.8333333f, true);
             }
         }
 
